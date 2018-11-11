@@ -1,5 +1,6 @@
 #ifndef BUFFER_H_INCLUDED
 #define BUFFER_H_INCLUDED
+#include "String.h"
 
 #define TAM_BUFFER 10
 
@@ -14,9 +15,9 @@ typedef struct {
 /*Funciones del buffer*/
 void buffer_init(buffer_t *b);
 
-int buffer_push(buffer_t *b, string_a_t dato);
+int buffer_push(buffer_t *b, string_p_t dato);
 
-int buffer_pop(buffer_t *b, string_a_t *dato);
+int buffer_pop(buffer_t *b, string_p_t dato);
 
 
 #endif // BUFFER_H_INCLUDED

@@ -12,19 +12,20 @@
 #define MAX_COMANDOS 10
 
 
-void getNombreArchivo(string_p_t *ret){
+void getNombreArchivo(string_p_t ret){
     printf("Ingrese el nombre del archivo del cual leer los comandos: ");
     int i = 0;
-    
+
     char c;
-    scanf("%c", c);
+    scanf("%c", &c);
     while(c != '\n'){
-        *ret[i] = c;
+        ret[i] = c;
+        scanf("%c", &c);
         i++;
     }
 
-    *ret[i] = '\0';
-    printf("Leido de pantalla en getNombreArchivo: %s", *ret);
+    ret[i] = '\0';
+    printf("Leido de pantalla en getNombreArchivo: %s", ret);
 }
 
 FILE* archivo_init(string_p_t nombreArchivo){
@@ -42,7 +43,7 @@ void archivo_cerrar(FILE* f){
 
 int main()
 {
-    string_p_t nombreArchivo;
+    string_p_t nombreArchivo = malloc(sizeof(char) * TAM_STRING);
     FILE* archivo;
     string_p_t linea;
     size_t largoArch = 0;
@@ -58,7 +59,7 @@ int main()
     buffer_init(&buffer);
 
     /*Obtengo el nombre del archivo del cual leer los datos*/
-    getNombreArchivo(&nombreArchivo);
+    getNombreArchivo(nombreArchivo);
 
     /*Inicializo el archivo*/
     archivo = archivo_init(nombreArchivo);
@@ -73,15 +74,15 @@ int main()
         /*Como linea tiene cargado el string con el \n, tengo que sacarselo al final de los string
         y ademas tengo que chequear que no sea \n solo (ultima linea en archivos UNIX)*/
         /*Saco el \n del string*/
-        if(linea[strlen(linea)-1] == '\n' ){
-            linea[strlen(linea) - 1] = '\0';
+        if(linea[string_largo_p(linea)-1] == '\n' ){
+            linea[string_largo_p(linea) - 1] = '\0';
         }
         /*Si la linea no esta vacia, la inserto al buffer*/
         if(linea[0] != '\0'){
             printf("insertando..\n");
-            buffer_push(&buffer, *linea);
+            buffer_push(&buffer, linea);
         }
-        
+
         // linea = malloc(sizeof(char)*TAM_STRING);
     }
 
@@ -103,13 +104,13 @@ int main()
     //     free(datoLeidoBuffer);
     // }
 
-    string_a_t datoLeidoBuffer;
-    while(buffer_pop(&buffer, &datoLeidoBuffer) == 0){
+    string_p_t datoLeidoBuffer = malloc(sizeof(char) * TAM_STRING);
+    while(buffer_pop(&buffer, datoLeidoBuffer) == 0){
         printf("Obtenido: %s\n", datoLeidoBuffer);
         free(datoLeidoBuffer);
-        // datoLeidoBuffer = malloc(sizeof(char) * TAM_STRING);
+        datoLeidoBuffer = malloc(sizeof(char) * TAM_STRING);
     }
     free(datoLeidoBuffer);
-    
+
     return 0;
 }

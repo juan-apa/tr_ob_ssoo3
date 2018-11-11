@@ -36,6 +36,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Buffer.h" />
+		<Unit filename="String.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="String.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
