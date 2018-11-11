@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include "String.h"
 #include <semaphore.h>
 #include <pthread.h>
 #include <unistd.h>
@@ -11,9 +11,8 @@
 
 #define MAX_COMANDOS 10
 
-//typedef struct char String[255];
 
-void getNombreArchivo(String *ret){
+void getNombreArchivo(string_p_t *ret){
     printf("Ingrese el nombre del archivo del cual leer los comandos: ");
     int i = 0;
     
@@ -25,10 +24,10 @@ void getNombreArchivo(String *ret){
     }
 
     *ret[i] = '\0';
-    printf("Leido de pantalla en getNombreArchivo: %s", ret);
+    printf("Leido de pantalla en getNombreArchivo: %s", *ret);
 }
 
-FILE* archivo_init(String nombreArchivo){
+FILE* archivo_init(string_p_t nombreArchivo){
     FILE* ret = NULL;
     ret = fopen(nombreArchivo, "r");
     if(ret == NULL){
@@ -41,19 +40,15 @@ void archivo_cerrar(FILE* f){
     fclose(f);
 }
 
-void invocarConsumidor(String comando){
-    
-}
-
 int main()
 {
-    String nombreArchivo;
+    string_p_t nombreArchivo;
     FILE* archivo;
-    String linea;
+    string_p_t linea;
     size_t largoArch = 0;
     __ssize_t largoLinea;
     buffer_t buffer;
-    sem_t * sem_a;
+    // sem_t * sem_a;
 
     /*Inicializo el semaforo*/
     //sem_a = sem_open("sem_tr_ob", O_CREAT, 0644, 0);
@@ -108,8 +103,8 @@ int main()
     //     free(datoLeidoBuffer);
     // }
 
-    String* datoLeidoBuffer = malloc(sizeof(char) * TAM_STRING);
-    while(buffer_pop(&buffer, datoLeidoBuffer) == 0){
+    string_a_t datoLeidoBuffer;
+    while(buffer_pop(&buffer, &datoLeidoBuffer) == 0){
         printf("Obtenido: %s\n", datoLeidoBuffer);
         free(datoLeidoBuffer);
         // datoLeidoBuffer = malloc(sizeof(char) * TAM_STRING);
