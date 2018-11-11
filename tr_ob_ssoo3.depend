@@ -1,0 +1,13 @@
+# depslib dependency file v1.0
+1541629811 source:/home/juan/Documents/tr_ob_ssoo3/Buffer.c
+	"Buffer.h"
+	<stddef.h>
+	<stdlib.h>
+
+1541629812 /home/juan/Documents/tr_ob_ssoo3/Buffer.h
+
+1541630025 source:/home/juan/Documents/tr_ob_ssoo3/main.c
+	<stdio.h>
+	<stdlib.h>
+	"Buffer.h"
+
