@@ -81,6 +81,7 @@ int main()
             string_p_t salidaComando;
             fscanf(fp, salidaComando);
             escribirSalidaComando(popeado, salidaComando);
+            pclose(fp);
             printf("Se popeo: %s\n", popeado);
         }
         sleep(1);
