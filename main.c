@@ -6,8 +6,11 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/shm.h>
+#include <signal.h>
+#include <pthread.h>    /* required for pthreads */
 #include <fcntl.h>
 #include "Buffer.h"
+#include "DatosShMem.h"
 
 #define MAX_COMANDOS 10
 
@@ -25,15 +28,11 @@ void getNombreArchivo(string_p_t ret){
     }
 
     ret[i] = '\0';
-    printf("Leido de pantalla en getNombreArchivo: %s", ret);
 }
 
 FILE* archivo_init(string_p_t nombreArchivo){
     FILE* ret = NULL;
     ret = fopen(nombreArchivo, "r");
-    if(ret == NULL){
-        printf("No se ha encontrado el archivo en el fs.\n");
-    }
     return ret;
 }
 
@@ -48,69 +47,67 @@ int main()
     string_p_t linea;
     size_t largoArch = 0;
     __ssize_t largoLinea;
-    buffer_t buffer;
-    // sem_t * sem_a;
+    datos_sh_mem_t* shMemData;
+    sem_t * semaforo;
+
+    FILE * f;
+    key_t claveMemoria;
+    int idMemoria;
+
+    f = fopen("/tmp/memCompartidatrOb", "w+");
+    claveMemoria = ftok("/tmp/memCompartidatrOb", 33);
+    idMemoria = shmget(claveMemoria, sizeof(datos_sh_mem_t), 0644 | IPC_CREAT);
+    shMemData = (datos_sh_mem_t*) shmat(idMemoria, NULL, 0);
 
     /*Inicializo el semaforo*/
-    //sem_a = sem_open("sem_tr_ob", O_CREAT, 0644, 0);
+    semaforo = sem_open("sem_tr_ob1", O_CREAT, 0644, 1);
 
     /*Inicializo el buffer*/
-    // buffer = malloc(sizeof(buffer_t));
-    buffer_init(&buffer);
+    datos_sh_mem_init(shMemData, 0);
 
     /*Obtengo el nombre del archivo del cual leer los datos*/
     getNombreArchivo(nombreArchivo);
 
     /*Inicializo el archivo*/
     archivo = archivo_init(nombreArchivo);
+
+    /*Me fijo si existe el archivo*/
     if(archivo == NULL){
-        printf("Archivo = null\n");
-    }
+        printf("No se ha encontrado el archivo en el fs.\n");
+    }else{
+        /*Leo las lineas una por una y las mando a los consumidores*/
+        while ((largoLinea = getline(&linea, &largoArch, archivo)) != -1) {
+            /*Como linea tiene cargado el string con el \n, tengo que sacarselo al final de los string
+            y ademas tengo que chequear que no sea \n solo (ultima linea en archivos UNIX)*/
+            /*Saco el \n del string*/
+            if(linea[string_largo_p(linea)-1] == '\n' ){
+                linea[string_largo_p(linea) - 1] = '\0';
+            }
+            /*Si la linea no esta vacia, la inserto al buffer*/
+            if(linea[0] != '\0'){
+                printf("insertando..\n");
 
-    /*Leo las lineas una por una y las mando a los consumidores*/
-    //linea = malloc(sizeof(char)*TAM_STRING);
-    while ((largoLinea = getline(&linea, &largoArch, archivo)) != -1) {
-        // printf("Largo: %zu; contenido: %s", largoLinea, linea);
-        /*Como linea tiene cargado el string con el \n, tengo que sacarselo al final de los string
-        y ademas tengo que chequear que no sea \n solo (ultima linea en archivos UNIX)*/
-        /*Saco el \n del string*/
-        if(linea[string_largo_p(linea)-1] == '\n' ){
-            linea[string_largo_p(linea) - 1] = '\0';
+                /*Inicio seccion critica*/
+                sem_wait(semaforo);
+                buffer_push(&(shMemData -> bufferCirc), linea);
+                sem_post(semaforo);
+                /*Fin seccion critica*/
+            }
         }
-        /*Si la linea no esta vacia, la inserto al buffer*/
-        if(linea[0] != '\0'){
-            printf("insertando..\n");
-            buffer_push(&buffer, linea);
+
+        /*Cierro el archivo*/
+        archivo_cerrar(archivo);
+        datos_sh_mem_finalizar(shMemData);
+        int cont = 0;
+        while(cont < 10){
+            sleep(1);
+            cont++;
         }
-
-        // linea = malloc(sizeof(char)*TAM_STRING);
     }
 
-    /*Cierro el archivo*/
-    archivo_cerrar(archivo);
-
-    // printf("inicio script.\n");
-    // buffer_t *buffer = malloc(sizeof(buffer_t));
-    // buffer_init(buffer, 10);
-    // buffer_push(buffer, "dato_1");
-    // buffer_push(buffer, "dato_2");
-    // buffer_push(buffer, "dato_3");
-    // buffer_push(buffer, "dato_4");
-
-    // for(int i = 0; i < 4; i++){
-    //     String datoLeidoBuffer = malloc(sizeof(char) * TAM_STRING);
-    //     buffer_pop(buffer, datoLeidoBuffer);
-    //     printf("Obtenido: %s\n", datoLeidoBuffer);
-    //     free(datoLeidoBuffer);
-    // }
-
-    string_p_t datoLeidoBuffer = malloc(sizeof(char) * TAM_STRING);
-    while(buffer_pop(&buffer, datoLeidoBuffer) == 0){
-        printf("Obtenido: %s\n", datoLeidoBuffer);
-        free(datoLeidoBuffer);
-        datoLeidoBuffer = malloc(sizeof(char) * TAM_STRING);
-    }
-    free(datoLeidoBuffer);
+    /*Me desconecto de la memoria compartida*/
+    shmctl (idMemoria, IPC_RMID, (struct shmid_ds *)NULL);
+    unlink ("/tmp/memCompartidatrOb");
 
     return 0;
 }

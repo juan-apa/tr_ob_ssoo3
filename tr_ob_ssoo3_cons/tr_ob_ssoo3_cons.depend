@@ -1,0 +1,32 @@
+# depslib dependency file v1.0
+1541973305 source:/home/juan/Documents/nuevo/tr_ob_ssoo3/tr_ob_ssoo3_cons/Buffer.c
+	"Buffer.h"
+	<stddef.h>
+	<stdlib.h>
+	<stdio.h>
+
+1541972989 /home/juan/Documents/nuevo/tr_ob_ssoo3/tr_ob_ssoo3_cons/Buffer.h
+	"String.h"
+
+1541968178 /home/juan/Documents/nuevo/tr_ob_ssoo3/tr_ob_ssoo3_cons/String.h
+
+1541975068 source:/home/juan/Documents/nuevo/tr_ob_ssoo3/tr_ob_ssoo3_cons/DatosShMem.c
+	"DatosShMem.h"
+
+1541975017 /home/juan/Documents/nuevo/tr_ob_ssoo3/tr_ob_ssoo3_cons/DatosShMem.h
+	"Buffer.h"
+
+1541978529 source:/home/juan/Documents/nuevo/tr_ob_ssoo3/tr_ob_ssoo3_cons/main.c
+	<stdio.h>
+	<stdlib.h>
+	<unistd.h>
+	<sys/stat.h>
+	<sys/shm.h>
+	<fcntl.h>
+	"Buffer.h"
+	"DatosShMem.h"
+	"String.h"
+
+1541965668 source:/home/juan/Documents/nuevo/tr_ob_ssoo3/tr_ob_ssoo3_cons/String.c
+	"String.h"
+
