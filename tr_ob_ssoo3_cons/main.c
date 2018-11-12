@@ -11,6 +11,32 @@
 #include <fcntl.h>
 #include "Buffer.h"
 #include "DatosShMem.h"
+#include <time.h>
+#include <string.h>
+
+
+int escribirSalidaComando(string_p_t comando, string_p_t str){
+    int ret = 0;
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    string_p_t horaAhora;
+    sprintf(horaAhora, "%d-%d-%d_%d:%d_", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min);
+    strcat(horaAhora, comando);
+    strcat(horaAhora, ".log");
+    
+    FILE *f = fopen(horaAhora, "w");
+    if (f == NULL)
+    {
+        printf("Error al abrir el archivo de salida de comandos: %s\n", horaAhora);
+        ret = -1;
+    }
+    else{
+        fprintf(f, str);
+        fclose(f);
+    }
+    free(horaAhora);
+    return ret;
+}
 
 int main()
 {
@@ -39,7 +65,7 @@ int main()
     while(salir == 0){
         string_p_t popeado = (char *) malloc(sizeof(char) * TAM_STRING);
         int pop;
-
+        
         /*Inicio seccion critica*/
         sem_wait(semaforo);
         pop = buffer_pop(&(shMemData->bufferCirc), popeado);
@@ -50,6 +76,11 @@ int main()
             printf("No se pudo popear nada.\n");
         }
         else{
+            /*Ejecuto el comando*/
+            FILE *fp = popen(command,"r");
+            string_p_t salidaComando;
+            fscanf(fp, salidaComando);
+            escribirSalidaComando(popeado, salidaComando);
             printf("Se popeo: %s\n", popeado);
         }
         sleep(1);
