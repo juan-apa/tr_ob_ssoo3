@@ -30,3 +30,40 @@
 1541965668 source:/home/juan/Documents/nuevo/tr_ob_ssoo3/tr_ob_ssoo3_cons/String.c
 	"String.h"
 
+1542036942 source:/home/juan/Documents/tr_ob_ssoo3/tr_ob_ssoo3_cons/Buffer.c
+	"Buffer.h"
+	<stddef.h>
+	<stdlib.h>
+	<stdio.h>
+
+1542036942 /home/juan/Documents/tr_ob_ssoo3/tr_ob_ssoo3_cons/Buffer.h
+	"String.h"
+
+1542036942 /home/juan/Documents/tr_ob_ssoo3/tr_ob_ssoo3_cons/String.h
+
+1542036942 source:/home/juan/Documents/tr_ob_ssoo3/tr_ob_ssoo3_cons/DatosShMem.c
+	"DatosShMem.h"
+
+1542036942 /home/juan/Documents/tr_ob_ssoo3/tr_ob_ssoo3_cons/DatosShMem.h
+	"Buffer.h"
+
+1542036942 source:/home/juan/Documents/tr_ob_ssoo3/tr_ob_ssoo3_cons/String.c
+	"String.h"
+
+1542041188 source:/home/juan/Documents/tr_ob_ssoo3/tr_ob_ssoo3_cons/main.c
+	<stdio.h>
+	<stdlib.h>
+	"String.h"
+	<semaphore.h>
+	<pthread.h>
+	<unistd.h>
+	<sys/stat.h>
+	<sys/shm.h>
+	<signal.h>
+	<pthread.h>
+	<fcntl.h>
+	"Buffer.h"
+	"DatosShMem.h"
+	<time.h>
+	<string.h>
+

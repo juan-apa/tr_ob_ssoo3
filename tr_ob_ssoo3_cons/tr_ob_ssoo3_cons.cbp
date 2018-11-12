@@ -31,6 +31,18 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="Buffer.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Buffer.h" />
+		<Unit filename="DatosShMem.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="DatosShMem.h" />
+		<Unit filename="String.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="String.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
