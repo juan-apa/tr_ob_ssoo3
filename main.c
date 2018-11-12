@@ -54,6 +54,7 @@ int main()
     key_t claveMemoria;
     int idMemoria;
 
+    /*Inicializo la memoria compartida*/
     f = fopen("/tmp/memCompartidatrOb", "w+");
     claveMemoria = ftok("/tmp/memCompartidatrOb", 33);
     idMemoria = shmget(claveMemoria, sizeof(datos_sh_mem_t), 0644 | IPC_CREAT);
@@ -98,6 +99,7 @@ int main()
         /*Cierro el archivo*/
         archivo_cerrar(archivo);
         datos_sh_mem_finalizar(shMemData);
+        printf("Finalizado: %d\n", shMemData ->finArchivo);
         int cont = 0;
         while(cont < 10){
             sleep(1);
