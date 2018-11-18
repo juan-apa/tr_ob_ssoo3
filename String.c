@@ -38,6 +38,3 @@ string_a_t* string_aarray(string_p_t str){
     ret[largoArr] = '\0';
     return &ret;
 }
-
-
-

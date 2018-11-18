@@ -45,6 +45,9 @@ int main()
     int idMemoria;
     datos_sh_mem_t* shMemData;
     sem_t * semaforo;
+    string_p_t popeado;
+    string_p_t linea;
+    int pop;
 
     /*Inicializo la memoria compartida*/
     f = fopen("/tmp/memCompartidatrOb", "w+");
@@ -56,47 +59,52 @@ int main()
     semaforo = sem_open("sem_tr_ob1", O_CREAT, 0644, 1);
 
     int cont = 0;
+    popeado = (char *) malloc(sizeof(char) * TAM_STRING);
     /*Inicio seccion critica*/
     sem_wait(semaforo);
     int finalizado = datos_sh_mem_finalizado(shMemData);
+    pop = buffer_pop(&(shMemData->bufferCirc), popeado);
     sem_post(semaforo);
     /*fin seccion critica*/
     int salir = 0;
-    while(salir == 0){
-        string_p_t popeado = (char *) malloc(sizeof(char) * TAM_STRING);
-        int pop;
-
-        /*Inicio seccion critica*/
-        sem_wait(semaforo);
-        pop = buffer_pop(&(shMemData->bufferCirc), popeado);
-        sem_post(semaforo);
-        /*fin seccion critica*/
-
+    while(salir == 0 ){
         if(pop == -1){
             printf("No se pudo popear nada.\n");
         }
         else{
             /*Ejecuto el comando*/
-            FILE *fp = popen(popeado,"r");
-            string_p_t salidaComando = malloc(sizeof(char) * 255);
-            fscanf(fp, salidaComando);
+            FILE *fp = popen(popeado,"re");
+            string_p_t salidaComando = malloc(sizeof(char) * 4096);
+            linea = malloc(sizeof(char) * 1024);
+            while(fgets(linea, 100, fp) != NULL){
+                strcat(salidaComando, linea);
+                free(linea);
+                linea = malloc(sizeof(char) * 1024);
+            }
+
             escribirSalidaComando(popeado, salidaComando);
-            pclose(fp);
+            int ret_val = pclose(fp);
             printf("Se popeo: %s\n", popeado);
+            free(salidaComando);
+            free(popeado);
+            popeado = malloc(sizeof(char) * TAM_STRING);
         }
         sleep(1);
         cont++;
+
         /*Inicio seccion critica*/
         sem_wait(semaforo);
         int finalizado = datos_sh_mem_finalizado(shMemData);
+        pop = buffer_pop(&(shMemData->bufferCirc), popeado);
         sem_post(semaforo);
         /*fin seccion critica*/
-        printf("finalizado: %d\n", finalizado);
 
         if(pop == -1 && finalizado == 1){
             salir = 1;
+            free(popeado);
         }
     }
+
 
     return 0;
 }
