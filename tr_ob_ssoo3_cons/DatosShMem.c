@@ -10,5 +10,5 @@ int datos_sh_mem_finalizado(datos_sh_mem_t* datos){
 }
 
 void datos_sh_mem_finalizar(datos_sh_mem_t* datos){
-    datos -> finArchivo = 1;
+    datos -> finArchivo = 0;
 }
